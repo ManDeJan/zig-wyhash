@@ -2,6 +2,7 @@
 // Zig implementation of wyhash
 
 const std = @import("std");
+const mem = std.mem;
 
 const primes = []u64{
     0xa0761d6478bd642f, 0xe7037ed1a0b428db,
@@ -10,11 +11,7 @@ const primes = []u64{
 };
 
 inline fn read_bytes(bytes: u8, data: []const u8) u64 {
-    var result: u64 = 0;
-    for (data[0..bytes]) |value, i| {
-        result |= @intCast(u64, value) << @truncate(u6, i * 8);
-    }
-    return result;
+    return mem.readVarInt(u64, data[0..bytes], @import("builtin").endian);
 }
 
 inline fn read_8bytes_swapped(data: []const u8) u64 {
