@@ -39,40 +39,30 @@ pub fn hash(key: []const u8, initial_seed: u64) u64 {
     }
     seed ^= primes[0];
 
-    seed = switch (@truncate(u5, len & 31)) {
-        0 => seed,
-        1 => mum(seed, read_bytes(1, key[i..]) ^ primes[1]),
-        2 => mum(seed, read_bytes(2, key[i..]) ^ primes[1]),
-        3 => mum(seed, ((read_bytes(2, key[i..]) << 8) | read_bytes(1, key[i + 2 ..])) ^ primes[1]),
-        4 => mum(seed, read_bytes(4, key[i..]) ^ primes[1]),
-        5 => mum(seed, ((read_bytes(4, key[i..]) << 8) | read_bytes(1, key[i + 4 ..])) ^ primes[1]),
-        6 => mum(seed, ((read_bytes(4, key[i..]) << 16) | read_bytes(2, key[i + 4 ..])) ^ primes[1]),
-        7 => mum(seed, ((read_bytes(4, key[i..]) << 24) | (read_bytes(2, key[i + 4 ..]) << 8) | read_bytes(1, key[i + 6 ..])) ^ primes[1]),
-        8 => mum(seed, read_8bytes_swapped(key[i..]) ^ primes[1]),
-        9 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_bytes(1, key[i + 8 ..]) ^ primes[2]),
-        10 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_bytes(2, key[i + 8 ..]) ^ primes[2]),
-        11 => mum(read_8bytes_swapped(key[i..]) ^ seed, ((read_bytes(2, key[i + 8 ..]) << 8) | read_bytes(1, key[i + 8 + 2 ..])) ^ primes[2]),
-        12 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_bytes(4, key[i + 8 ..]) ^ primes[2]),
-        13 => mum(read_8bytes_swapped(key[i..]) ^ seed, ((read_bytes(4, key[i + 8 ..]) << 8) | read_bytes(1, key[i + 8 + 4 ..])) ^ primes[2]),
-        14 => mum(read_8bytes_swapped(key[i..]) ^ seed, ((read_bytes(4, key[i + 8 ..]) << 16) | read_bytes(2, key[i + 8 + 4 ..])) ^ primes[2]),
-        15 => mum(read_8bytes_swapped(key[i..]) ^ seed, ((read_bytes(4, key[i + 8 ..]) << 24) | (read_bytes(2, key[i + 8 + 4 ..]) << 8) | read_bytes(1, key[i + 8 + 6 ..])) ^ primes[2]),
-        16 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_8bytes_swapped(key[i + 8 ..]) ^ primes[2]),
-        17 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_8bytes_swapped(key[i + 8 ..]) ^ primes[2]) ^ mum(seed, read_bytes(1, key[i + 16 ..]) ^ primes[3]),
-        18 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_8bytes_swapped(key[i + 8 ..]) ^ primes[2]) ^ mum(seed, read_bytes(2, key[i + 16 ..]) ^ primes[3]),
-        19 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_8bytes_swapped(key[i + 8 ..]) ^ primes[2]) ^ mum(seed, ((read_bytes(2, key[i + 16 ..]) << 8) | read_bytes(1, key[i + 16 + 2 ..])) ^ primes[3]),
-        20 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_8bytes_swapped(key[i + 8 ..]) ^ primes[2]) ^ mum(seed, read_bytes(4, key[i + 16 ..]) ^ primes[3]),
-        21 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_8bytes_swapped(key[i + 8 ..]) ^ primes[2]) ^ mum(seed, ((read_bytes(4, key[i + 16 ..]) << 8) | read_bytes(1, key[i + 16 + 4 ..])) ^ primes[3]),
-        22 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_8bytes_swapped(key[i + 8 ..]) ^ primes[2]) ^ mum(seed, ((read_bytes(4, key[i + 16 ..]) << 16) | read_bytes(2, key[i + 16 + 4 ..])) ^ primes[3]),
-        23 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_8bytes_swapped(key[i + 8 ..]) ^ primes[2]) ^ mum(seed, ((read_bytes(4, key[i + 16 ..]) << 24) | (read_bytes(2, key[i + 16 + 4 ..]) << 8) | read_bytes(1, key[i + 16 + 6 ..])) ^ primes[3]),
-        24 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_8bytes_swapped(key[i + 8 ..]) ^ primes[2]) ^ mum(seed, read_8bytes_swapped(key[i + 16 ..]) ^ primes[3]),
-        25 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_8bytes_swapped(key[i + 8 ..]) ^ primes[2]) ^ mum(read_8bytes_swapped(key[i + 16 ..]) ^ seed, read_bytes(1, key[i + 24 ..]) ^ primes[4]),
-        26 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_8bytes_swapped(key[i + 8 ..]) ^ primes[2]) ^ mum(read_8bytes_swapped(key[i + 16 ..]) ^ seed, read_bytes(2, key[i + 24 ..]) ^ primes[4]),
-        27 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_8bytes_swapped(key[i + 8 ..]) ^ primes[2]) ^ mum(read_8bytes_swapped(key[i + 16 ..]) ^ seed, ((read_bytes(2, key[i + 24 ..]) << 8) | read_bytes(1, key[i + 24 + 2 ..])) ^ primes[4]),
-        28 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_8bytes_swapped(key[i + 8 ..]) ^ primes[2]) ^ mum(read_8bytes_swapped(key[i + 16 ..]) ^ seed, read_bytes(4, key[i + 24 ..]) ^ primes[4]),
-        29 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_8bytes_swapped(key[i + 8 ..]) ^ primes[2]) ^ mum(read_8bytes_swapped(key[i + 16 ..]) ^ seed, ((read_bytes(4, key[i + 24 ..]) << 8) | read_bytes(1, key[i + 24 + 4 ..])) ^ primes[4]),
-        30 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_8bytes_swapped(key[i + 8 ..]) ^ primes[2]) ^ mum(read_8bytes_swapped(key[i + 16 ..]) ^ seed, ((read_bytes(4, key[i + 24 ..]) << 16) | read_bytes(2, key[i + 24 + 4 ..])) ^ primes[4]),
-        31 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_8bytes_swapped(key[i + 8 ..]) ^ primes[2]) ^ mum(read_8bytes_swapped(key[i + 16 ..]) ^ seed, ((read_bytes(4, key[i + 24 ..]) << 24) | (read_bytes(2, key[i + 24 + 4 ..]) << 8) | read_bytes(1, key[i + 24 + 6 ..])) ^ primes[4]),
-    };
+    const rem_len   = @truncate(u5, len);
+    const rem_bits  = @truncate(u3, rem_len % 8);
+    const rem_bytes = @truncate(u2, (len - 1) / 8);
+    const rem_key   = key[i + @intCast(u5, rem_bytes) * 8..];
+
+    if (rem_len != 0) {
+        const rest = switch (rem_bits) {
+            0 => read_8bytes_swapped(key[i + 8 ..]),
+            1 => read_bytes(1, rem_key),
+            2 => read_bytes(2, rem_key),
+            3 => read_bytes(2, rem_key) <<  8 | read_bytes(1, rem_key[2..]),
+            4 => read_bytes(4, rem_key),
+            5 => read_bytes(4, rem_key) <<  8 | read_bytes(1, rem_key[4..]),
+            6 => read_bytes(4, rem_key) << 16 | read_bytes(2, rem_key[4..]),
+            7 => read_bytes(4, rem_key) << 24 | read_bytes(2, rem_key[4..]) << 8 | read_bytes(1, rem_key[6..]),
+        } ^ primes[rem_bytes + 1];
+
+        seed = switch (rem_bytes) {
+            0 => mum(seed, rest),
+            1 => mum(read_8bytes_swapped(key[i..]) ^ seed, rest),
+            2 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_8bytes_swapped(key[i + 8 ..]) ^ primes[2]) ^ mum(seed, rest),
+            3 => mum(read_8bytes_swapped(key[i..]) ^ seed, read_8bytes_swapped(key[i + 8 ..]) ^ primes[2]) ^ mum(read_8bytes_swapped(key[i + 16 ..]) ^ seed, rest),
+        };
+    }
 
     return mum(seed, len ^ primes[5]);
 }
