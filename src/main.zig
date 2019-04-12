@@ -43,7 +43,7 @@ pub fn hash(key: []const u8, initial_seed: u64) u64 {
     if (rem_len != 0) {
         const rem_bits  = @truncate(u3, rem_len % 8);
         const rem_bytes = @truncate(u2, (len - 1) / 8);
-        const rem_key   = key[i + @intCast(u5, rem_bytes) * 8 ..];
+        const rem_key   = key[i + @intCast(usize, rem_bytes) * 8 ..];
 
         const rest = switch (rem_bits) {
             0 => read_8bytes_swapped(rem_key),
