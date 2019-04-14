@@ -6,6 +6,7 @@ pub fn build(b: *Builder) void {
     lib.setBuildMode(mode);
 
     var tests = b.addTest("test/test.zig");
+    tests.addPackagePath("wyhash", "src/main.zig");
     tests.setBuildMode(mode);
 
     const test_step = b.step("test", "Run library tests");
