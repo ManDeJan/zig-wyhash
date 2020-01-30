@@ -45,7 +45,8 @@ pub fn hash(key: []const u8, initial_seed: u64) u64 {
     var seed = initial_seed;
     var i: u64 = @truncate(u6, len);
 
-         if (i <   4) { seed = mix0(read_bytes(3, key[i..]), 0, seed); }
+         if (i ==  0) { }
+    else if (i <   4) { seed = mix0(read_bytes(3, key[i..]), 0, seed); }
     else if (i <=  8) { seed = mix0(read_bytes(4, key[0..]), read_bytes(4, key[i - 4..]), seed); }
     else if (i <= 16) { seed = mix0(read_bytes(8, key[0..]), read_bytes(8, key[i - 8..]), seed); }
     else if (i <= 24) { seed = mix0(read_bytes(8, key[0..]), read_bytes(8, key[8..]), seed) ^ mix1(read_bytes(8, key[i - 8..]), 0, seed); }
